@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.demo.dto.RelatorioDTO;
 import com.example.demo.service.RelatorioService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -44,5 +45,13 @@ public class RelatorioController {
     @DeleteMapping("/{id}")
     public void deletar(@PathVariable Long id) {
         relatorioService.softDelete(id);
+    }
+
+    @GetMapping("/export/excel")
+    public void exportExcel(HttpServletResponse response) throws Exception {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=relatorios.xlsx");
+
+        relatorioService.exportExcel(response);
     }
 }
