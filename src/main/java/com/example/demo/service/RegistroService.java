@@ -22,8 +22,8 @@ public class RegistroService extends BaseService<Registro, RegistroDTO> {
     private final RelatorioRepository relatorioRepository;
 
     public RegistroService(RegistroRepository registroRepository,
-                           PostoRepository postoRepository,
-                           RelatorioRepository relatorioRepository) {
+            PostoRepository postoRepository,
+            RelatorioRepository relatorioRepository) {
         super(registroRepository);
         this.registroRepository = registroRepository;
         this.postoRepository = postoRepository;
@@ -64,30 +64,6 @@ public class RegistroService extends BaseService<Registro, RegistroDTO> {
 
         // salvar usando BaseService
         return super.create(dto);
-    }
-
-    // 🔥 Converter DTO → Entity
-    @Override
-    public Registro toEntity(RegistroDTO dto) {
-        Registro entity = super.toEntity(dto);
-
-        // converter tipo
-        if (dto.getTipo() != null) {
-            entity.setTipo(TipoRegistro.valueOf(dto.getTipo()));
-        }
-
-        // vincular posto
-        if (dto.getPostoId() != null) {
-            Posto posto = postoRepository.findById(dto.getPostoId())
-                    .orElseThrow(() -> new RuntimeException("Posto não encontrado"));
-
-            entity.setPosto(posto);
-        }
-
-        // 🔥 garantir data/hora no backend
-        entity.setDataHora(LocalDateTime.now());
-
-        return entity;
     }
 
     // 🔥 Converter Entity → DTO

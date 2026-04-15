@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.example.demo.enums.TipoRegistro;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -21,6 +22,7 @@ public class Registro extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private TipoRegistro tipo;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String urlImagem;
 
     private LocalDateTime dataHora;

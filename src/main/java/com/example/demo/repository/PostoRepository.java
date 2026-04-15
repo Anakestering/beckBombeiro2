@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface PostoRepository extends BaseRepository<Posto, Long> {
 
-    List<Posto> findAllByOrderByOrdemAsc();
+    List<Posto> findAllByAtivoTrueOrderByOrdemAsc();
 
 }

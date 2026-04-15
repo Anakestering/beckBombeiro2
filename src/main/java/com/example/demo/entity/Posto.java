@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import java.util.List;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -14,11 +15,13 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
+
 public class Posto extends BaseEntity {
 
     @Column(nullable = false)
     private String nome;
 
+    @Column(nullable = false)
     private Integer ordem;
 
     @JsonIgnore

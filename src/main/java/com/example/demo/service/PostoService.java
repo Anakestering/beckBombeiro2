@@ -20,9 +20,9 @@ public class PostoService extends BaseService<Posto, PostoDTO> {
 
     // Método específico pro seu sistema (ordenado)
     public List<PostoDTO> listarOrdenado() {
-        return postoRepository.findAllByOrderByOrdemAsc()
-                .stream()
-                .map(this::toDto)
-                .toList();
-    }
+    return postoRepository.findAllByAtivoTrueOrderByOrdemAsc()
+            .stream()
+            .map(this::toDto)
+            .toList();
+}
 }
