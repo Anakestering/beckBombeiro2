@@ -18,11 +18,12 @@ import lombok.EqualsAndHashCode;
 
 public class Posto extends BaseEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String nome;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Integer ordem;
+    
 
     @JsonIgnore
     @OneToMany(mappedBy = "posto", fetch = FetchType.LAZY)

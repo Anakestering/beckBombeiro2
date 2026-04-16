@@ -10,12 +10,25 @@ import com.example.demo.service.RelatorioService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/relatorios")
 @RequiredArgsConstructor
 public class RelatorioController {
 
     private final RelatorioService relatorioService;
+
+    @GetMapping("/export")
+    public void exportExcelPorPeriodo(
+            @RequestParam String inicio,
+            @RequestParam String fim,
+            HttpServletResponse response) throws Exception {
+
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=relatorios.xlsx");
+
+        relatorioService.exportExcelPorPeriodo(inicio, fim, response);
+    }
 
     // 🔥 Criar relatório (usado no Dashboard)
     @PostMapping
@@ -30,7 +43,7 @@ public class RelatorioController {
     }
 
     // 🔥 Buscar por ID (caso precise)
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public RelatorioDTO buscarPorId(@PathVariable Long id) {
         return relatorioService.read(id);
     }
@@ -47,11 +60,14 @@ public class RelatorioController {
         relatorioService.softDelete(id);
     }
 
-    @GetMapping("/export/excel")
-    public void exportExcel(HttpServletResponse response) throws Exception {
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-Disposition", "attachment; filename=relatorios.xlsx");
-
-        relatorioService.exportExcel(response);
+    @PatchMapping("/ocultar-todos")
+    public void ocultarTodos() {
+        relatorioService.ocultarTodos();
     }
+
+    @PatchMapping("/ocultar/{id}")
+    public void ocultar(@PathVariable Long id) {
+        relatorioService.ocultar(id);
+    }
+
 }
