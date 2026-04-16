@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.demo.dto.RegistroDTO;
 import com.example.demo.service.RegistroService;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/registros")
 public class RegistroController extends BaseController<RegistroDTO> {
@@ -31,4 +32,15 @@ public class RegistroController extends BaseController<RegistroDTO> {
     public List<RegistroDTO> read() {
         return registroService.listarTodos();
     }
+
+    @PatchMapping("/ocultar-todos")
+    public void ocultarTodos() {
+        registroService.ocultarTodos();
+    }
+
+    @PatchMapping("/ocultar/{id}")
+    public void ocultar(@PathVariable Long id) {
+        registroService.ocultar(id);
+    }
+
 }

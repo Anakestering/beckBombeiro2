@@ -25,6 +25,9 @@ public class Registro extends BaseEntity {
     @Column(columnDefinition = "LONGTEXT")
     private String urlImagem;
 
+    @Column(nullable = false)
+    private boolean visivelAdmin = true;
+    
     private LocalDateTime dataHora;
 
     @JsonIgnore
