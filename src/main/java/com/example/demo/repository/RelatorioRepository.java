@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -26,5 +27,7 @@ public interface RelatorioRepository extends BaseRepository<Relatorio, Long> {
             Posto posto,
             LocalDateTime inicio,
             LocalDateTime fim);
+
+    Optional<Relatorio> findTopByPostoIdOrderByDataHoraDesc(Long postoId);
 
 }

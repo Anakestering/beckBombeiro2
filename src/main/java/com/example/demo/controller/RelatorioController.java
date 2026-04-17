@@ -54,6 +54,11 @@ public class RelatorioController {
         return relatorioService.update(id, dto);
     }
 
+    @GetMapping("/posto/{postoId}")
+    public RelatorioDTO buscarPorPosto(@PathVariable Long postoId) {
+        return relatorioService.buscarPorPostoId(postoId);
+    }
+
     // 🔥 Soft delete (remover da tela, não do banco)
     @DeleteMapping("/{id}")
     public void deletar(@PathVariable Long id) {

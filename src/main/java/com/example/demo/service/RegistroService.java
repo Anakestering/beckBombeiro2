@@ -13,10 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dto.RegistroDTO;
-import com.example.demo.dto.RelatorioDTO;
 import com.example.demo.entity.Posto;
 import com.example.demo.entity.Registro;
-import com.example.demo.entity.Relatorio;
 import com.example.demo.enums.TipoRegistro;
 import com.example.demo.repository.PostoRepository;
 import com.example.demo.repository.RegistroRepository;
@@ -161,4 +159,6 @@ public class RegistroService extends BaseService<Registro, RegistroDTO> {
         r.setVisivelAdmin(false);
         registroRepository.save(r);
     }
+
+    
 }

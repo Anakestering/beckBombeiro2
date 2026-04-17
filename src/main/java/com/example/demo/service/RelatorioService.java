@@ -125,6 +125,13 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
         relatorioRepository.save(r);
     }
 
+    public RelatorioDTO buscarPorPostoId(Long postoId) {
+        return relatorioRepository
+                .findTopByPostoIdOrderByDataHoraDesc(postoId)
+                .map(this::toDto)
+                .orElse(null);
+    }
+
     /**
      * 🔥 EXPORTAÇÃO EXCEL
      */
