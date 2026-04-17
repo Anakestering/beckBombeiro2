@@ -147,6 +147,61 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Relatórios");
 
+            // =========================
+            // ESTILO DATA
+            // =========================
+            CreationHelper creationHelper = workbook.getCreationHelper();
+            CellStyle dataStylePar = workbook.createCellStyle();
+            CellStyle dataStyleImpar = workbook.createCellStyle();
+
+            short formatoData = creationHelper.createDataFormat().getFormat("dd/MM/yyyy HH:mm");
+
+            // =========================
+            // ESTILO HEADER
+            // =========================
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+
+            headerStyle.setFont(headerFont);
+            headerStyle.setBorderTop(BorderStyle.THIN);
+            headerStyle.setBorderBottom(BorderStyle.THIN);
+            headerStyle.setBorderLeft(BorderStyle.THIN);
+            headerStyle.setBorderRight(BorderStyle.THIN);
+
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            // =========================
+            // ESTILO LINHAS (ZEBRADO)
+            // =========================
+            CellStyle stylePar = workbook.createCellStyle();
+            CellStyle styleImpar = workbook.createCellStyle();
+
+            for (CellStyle style : new CellStyle[] { stylePar, styleImpar, dataStylePar, dataStyleImpar }) {
+                style.setBorderTop(BorderStyle.THIN);
+                style.setBorderBottom(BorderStyle.THIN);
+                style.setBorderLeft(BorderStyle.THIN);
+                style.setBorderRight(BorderStyle.THIN);
+            }
+
+            // cores
+            stylePar.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+            stylePar.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            styleImpar.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.getIndex());
+            styleImpar.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            // estilos de data herdando cor
+            dataStylePar.cloneStyleFrom(stylePar);
+            dataStylePar.setDataFormat(formatoData);
+
+            dataStyleImpar.cloneStyleFrom(styleImpar);
+            dataStyleImpar.setDataFormat(formatoData);
+
+            // =========================
+            // HEADER
+            // =========================
             Row header = sheet.createRow(0);
             String[] colunas = {
                     "Posto",
@@ -156,21 +211,57 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
             };
 
             for (int i = 0; i < colunas.length; i++) {
-                header.createCell(i).setCellValue(colunas[i]);
+                Cell cell = header.createCell(i);
+                cell.setCellValue(colunas[i]);
+                cell.setCellStyle(headerStyle);
             }
 
+            // Congelar header
+            sheet.createFreezePane(0, 1);
+
+            // =========================
+            // DADOS
+            // =========================
             int rowNum = 1;
-            for (Relatorio r : relatorios) {
-                Row row = sheet.createRow(rowNum++);
 
-                row.createCell(0).setCellValue(r.getPosto().getNome());
-                row.createCell(1).setCellValue(r.getManhaPrevencoes());
-                row.createCell(2).setCellValue(r.getManhaAtaques());
-                row.createCell(3).setCellValue(r.getTardePrevencoes());
-                row.createCell(4).setCellValue(r.getTardeAtaques());
-                row.createCell(5).setCellValue(r.getDataHora().toString());
+            for (Relatorio r : relatorios) {
+                Row row = sheet.createRow(rowNum);
+
+                boolean isPar = rowNum % 2 == 0;
+
+                CellStyle linhaStyle = isPar ? stylePar : styleImpar;
+                CellStyle dataStyle = isPar ? dataStylePar : dataStyleImpar;
+
+                // Criar células com estilo
+                for (int col = 0; col <= 5; col++) {
+                    Cell cell = row.createCell(col);
+                    cell.setCellStyle(linhaStyle);
+                }
+
+                row.getCell(0).setCellValue(r.getPosto().getNome());
+                row.getCell(1).setCellValue(r.getManhaPrevencoes());
+                row.getCell(2).setCellValue(r.getManhaAtaques());
+                row.getCell(3).setCellValue(r.getTardePrevencoes());
+                row.getCell(4).setCellValue(r.getTardeAtaques());
+
+                // DATA CORRETA
+                Cell cellData = row.getCell(5);
+                cellData.setCellValue(java.sql.Timestamp.valueOf(r.getDataHora()));
+                cellData.setCellStyle(dataStyle);
+
+                rowNum++;
             }
 
+            // =========================
+            // AUTO SIZE COLUNAS
+            // =========================
+            for (int i = 0; i < colunas.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            // =========================
+            // EXPORTAÇÃO
+            // =========================
             workbook.write(response.getOutputStream());
         }
     }
