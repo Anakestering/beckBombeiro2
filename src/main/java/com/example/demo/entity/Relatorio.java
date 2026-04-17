@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,15 +9,23 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Table(
+    uniqueConstraints = @UniqueConstraint(columnNames = {"posto_id", "data"})
+)
 public class Relatorio extends BaseEntity {
 
     private LocalDateTime dataHora;
+
+    @Column(nullable = false)
+    private LocalDate data;
 
     @Column(nullable = false)
     private boolean visivelAdmin = true;

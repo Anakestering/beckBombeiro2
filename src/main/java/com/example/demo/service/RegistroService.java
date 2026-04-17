@@ -36,30 +36,47 @@ public class RegistroService extends BaseService<Registro, RegistroDTO> {
         this.relatorioRepository = relatorioRepository;
     }
 
-    // 🔥 MÉTODO PRINCIPAL
+    @Transactional
     public RegistroDTO criarRegistro(RegistroDTO dto) {
 
         Posto posto = postoRepository.findById(dto.getPostoId())
                 .orElseThrow(() -> new RuntimeException("Posto não encontrado"));
 
-        TipoRegistro tipo = TipoRegistro.valueOf(dto.getTipo());
+        TipoRegistro tipo;
 
-        // ================= REGRAS DE NEGÓCIO =================
+        try {
+            tipo = TipoRegistro.valueOf(dto.getTipo().toUpperCase());
+        } catch (Exception e) {
+            throw new RuntimeException("Tipo inválido");
+        }
+
+        LocalDate hoje = LocalDate.now();
+        LocalDateTime inicio = hoje.atStartOfDay();
+        LocalDateTime fim = hoje.atTime(23, 59, 59);
+
+        // ================= 🔥 LIMITE DE 3 POR DIA =================
+
+        List<Registro> registrosHoje = registroRepository
+                .findByPostoIdAndTipoAndDataHoraBetween(posto.getId(), tipo, inicio, fim);
+
+        boolean temCheckinHoje = !registroRepository
+                .findByPostoIdAndTipoAndDataHoraBetween(posto.getId(), TipoRegistro.CHECKIN, inicio, fim)
+                .isEmpty();
+
+        if (registrosHoje.size() >= 3) {
+            throw new RuntimeException("Limite de 3 registros por dia atingido");
+        }
+
+        // ================= REGRAS CHECKOUT =================
         if (tipo == TipoRegistro.CHECKOUT) {
-
-            boolean temCheckinHoje = registroRepository
-                    .findByPostoAndTipo(posto, TipoRegistro.CHECKIN)
-                    .stream()
-                    .anyMatch(r -> isHoje(r.getDataHora()));
 
             if (!temCheckinHoje) {
                 throw new RuntimeException("Precisa fazer check-in antes");
             }
 
             boolean temRelatorioHoje = relatorioRepository
-                    .findByPosto(posto)
-                    .stream()
-                    .anyMatch(r -> isHoje(r.getDataHora()));
+                    .findByPostoAndData(posto, hoje)
+                    .isPresent();
 
             if (!temRelatorioHoje) {
                 throw new RuntimeException("Precisa preencher o relatório antes");
@@ -67,42 +84,43 @@ public class RegistroService extends BaseService<Registro, RegistroDTO> {
         }
 
         // ================= 🔥 SALVAR IMAGEM =================
+        String urlImagem;
+
         try {
             String base64 = dto.getUrlImagem();
 
-            // remove prefixo (data:image/jpeg;base64,)
-            String base64Limpo = base64.split(",")[1];
+            String[] partes = base64.split(",");
+            if (partes.length < 2) {
+                throw new RuntimeException("Imagem inválida");
+            }
 
+            String base64Limpo = partes[1];
             byte[] imagemBytes = Base64.getDecoder().decode(base64Limpo);
 
             String nomeArquivo = UUID.randomUUID() + ".jpg";
-
             Path caminho = Paths.get("uploads/" + nomeArquivo);
 
             Files.createDirectories(caminho.getParent());
             Files.write(caminho, imagemBytes);
 
-            // 🔥 substituir base64 por URL
-            String url = "http://localhost:8080/uploads/" + nomeArquivo;
-            dto.setUrlImagem(url);
+            urlImagem = "http://localhost:8080/uploads/" + nomeArquivo;
 
         } catch (Exception e) {
             throw new RuntimeException("Erro ao salvar imagem");
         }
 
-        // ================= SALVAR NO BANCO =================
-        RegistroDTO salvo = super.create(dto);
-
-        // ================= AJUSTES FINAIS =================
-        Registro entity = registroRepository.findById(salvo.getId()).orElseThrow();
+        // ================= 🔥 SALVAR DIRETO (SEM GAMBIARRA) =================
+        Registro entity = new Registro();
 
         entity.setPosto(posto);
         entity.setTipo(tipo);
         entity.setDataHora(LocalDateTime.now());
+        entity.setUrlImagem(urlImagem);
+        entity.setAtivo(true);
 
-        registroRepository.save(entity);
+        Registro salvo = registroRepository.save(entity);
 
-        return toDto(entity);
+        return toDto(salvo);
     }
 
     // 🔥 Converter Entity → DTO
@@ -131,13 +149,6 @@ public class RegistroService extends BaseService<Registro, RegistroDTO> {
                 .toList();
     }
 
-    // 🔧 auxiliar
-    private boolean isHoje(LocalDateTime data) {
-        return data.toLocalDate().equals(LocalDate.now());
-    }
-
-    
-
     // Ocultores
 
     @Transactional
@@ -160,5 +171,18 @@ public class RegistroService extends BaseService<Registro, RegistroDTO> {
         registroRepository.save(r);
     }
 
-    
+    public List<RegistroDTO> buscarHoje(Long postoId) {
+
+        LocalDate hoje = LocalDate.now();
+
+        LocalDateTime inicio = hoje.atStartOfDay();
+        LocalDateTime fim = hoje.atTime(23, 59, 59);
+
+        return registroRepository
+                .findByPostoIdAndDataHoraBetween(postoId, inicio, fim)
+                .stream()
+                .map(this::toDto)
+                .toList();
+    }
+
 }

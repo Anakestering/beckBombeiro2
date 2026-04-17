@@ -22,12 +22,12 @@ public class Registro extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private TipoRegistro tipo;
 
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(length = 500)
     private String urlImagem;
 
     @Column(nullable = false)
     private boolean visivelAdmin = true;
-    
+
     private LocalDateTime dataHora;
 
     @JsonIgnore

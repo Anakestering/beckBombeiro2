@@ -43,4 +43,11 @@ public class RegistroController extends BaseController<RegistroDTO> {
         registroService.ocultar(id);
     }
 
+    @GetMapping("/hoje/{postoId}")
+    public List<RegistroDTO> buscarHoje(@PathVariable Long postoId) {
+        return registroService.buscarHoje(postoId);
+    }
+
+    
+
 }

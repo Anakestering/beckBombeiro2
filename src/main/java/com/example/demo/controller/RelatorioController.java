@@ -75,4 +75,9 @@ public class RelatorioController {
         relatorioService.ocultar(id);
     }
 
+    @GetMapping("/hoje/{postoId}")
+public RelatorioDTO buscarHoje(@PathVariable Long postoId) {
+    return relatorioService.buscarHoje(postoId);
+}
+
 }

@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,9 +37,40 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
     @Override
     @Transactional
     public RelatorioDTO create(RelatorioDTO dto) {
-        Relatorio entity = this.toEntity(dto);
-        Relatorio salvo = relatorioRepository.save(entity);
-        return this.toDto(salvo);
+
+        // 🔍 Busca o posto
+        Posto posto = postoRepository.findById(dto.getPostoId())
+                .orElseThrow(() -> new RuntimeException("Posto não encontrado"));
+
+        // 📅 Pega a data (SEM hora)
+        LocalDate data = LocalDate.now();
+
+        // 🔍 Verifica se já existe relatório nesse dia
+        var existente = relatorioRepository.findByPostoAndData(posto, data);
+
+        Relatorio relatorio;
+
+        if (existente.isPresent()) {
+            // 🔥 ATUALIZA
+            relatorio = existente.get();
+
+        } else {
+            // 🔥 CRIA NOVO
+            relatorio = new Relatorio();
+            relatorio.setPosto(posto);
+            relatorio.setData(data);
+        }
+
+        // 🔥 Atualiza sempre os dados
+        relatorio.setDataHora(LocalDateTime.now());
+        relatorio.setManhaPrevencoes(dto.getManhaPrevencoes());
+        relatorio.setManhaAtaques(dto.getManhaAtaques());
+        relatorio.setTardePrevencoes(dto.getTardePrevencoes());
+        relatorio.setTardeAtaques(dto.getTardeAtaques());
+
+        Relatorio salvo = relatorioRepository.save(relatorio);
+
+        return toDto(salvo);
     }
 
     /**
@@ -105,6 +137,8 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
                 .toList();
     }
 
+    
+
     @Transactional
     public void ocultarTodos() {
         List<Relatorio> lista = relatorioRepository.findAll();
@@ -131,6 +165,19 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
                 .map(this::toDto)
                 .orElse(null);
     }
+
+    public RelatorioDTO buscarHoje(Long postoId) {
+
+    Posto posto = postoRepository.findById(postoId)
+        .orElseThrow();
+
+    LocalDate hoje = LocalDate.now();
+
+    return relatorioRepository
+        .findByPostoAndData(posto, hoje)
+        .map(this::toDto)
+        .orElse(null);
+}
 
     /**
      * 🔥 EXPORTAÇÃO EXCEL

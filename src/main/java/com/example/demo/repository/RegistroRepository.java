@@ -25,11 +25,15 @@ public interface RegistroRepository extends BaseRepository<Registro, Long> {
     List<Registro> findByDataHoraBetween(LocalDateTime inicio, LocalDateTime fim);
 
     // Buscar completo (posto + tipo + período)
-    List<Registro> findByPostoAndTipoAndDataHoraBetween(
-        Posto posto,
-        TipoRegistro tipo,
-        LocalDateTime inicio,
-        LocalDateTime fim
-    );
+    List<Registro> findByPostoIdAndTipoAndDataHoraBetween(
+            Long postoId,
+            TipoRegistro tipo,
+            LocalDateTime inicio,
+            LocalDateTime fim);
+
+    List<Registro> findByPostoIdAndDataHoraBetween(
+            Long postoId,
+            LocalDateTime inicio,
+            LocalDateTime fim);
 
 }

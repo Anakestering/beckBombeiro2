@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -29,5 +30,6 @@ public interface RelatorioRepository extends BaseRepository<Relatorio, Long> {
             LocalDateTime fim);
 
     Optional<Relatorio> findTopByPostoIdOrderByDataHoraDesc(Long postoId);
+    Optional<Relatorio> findByPostoAndData(Posto posto, LocalDate data);
 
 }
