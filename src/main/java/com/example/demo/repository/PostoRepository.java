@@ -12,4 +12,6 @@ public interface PostoRepository extends BaseRepository<Posto, Long> {
     List<Posto> findAllByAtivoTrueOrderByOrdemAsc();
     boolean existsByOrdem(Integer ordem);
 
+    
+
 }

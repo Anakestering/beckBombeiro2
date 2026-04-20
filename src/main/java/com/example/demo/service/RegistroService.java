@@ -142,12 +142,12 @@ public class RegistroService extends BaseService<Registro, RegistroDTO> {
 
     // 🔥 listar (admin)
     public List<RegistroDTO> listarTodos() {
-        return registroRepository.findAll()
+        return registroRepository.buscarOrdenadosPorPosto()
                 .stream()
-                .filter(Registro::isVisivelAdmin)
                 .map(this::toDto)
                 .toList();
     }
+   
 
     // Ocultores
 

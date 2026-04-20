@@ -11,8 +11,9 @@ public class RelatorioDTO {
     private Long id;
 
     @NotNull
-private Long postoId;
-private String nomePosto;
+    private Long postoId;
+    private String nomePosto;
+    private Integer ordemPosto;
 
     private LocalDateTime dataHora;
 

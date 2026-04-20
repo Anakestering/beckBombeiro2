@@ -21,8 +21,8 @@ public class Posto extends BaseEntity {
     @Column(nullable = true)
     private String nome;
 
-    @Column(nullable = true)
-    private Integer ordem;
+    @Column(nullable = false)
+    private Integer ordem = 0;
     
 
     @JsonIgnore

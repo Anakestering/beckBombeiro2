@@ -63,6 +63,7 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
 
         // 🔥 Atualiza sempre os dados
         relatorio.setDataHora(LocalDateTime.now());
+      
         relatorio.setManhaPrevencoes(dto.getManhaPrevencoes());
         relatorio.setManhaAtaques(dto.getManhaAtaques());
         relatorio.setTardePrevencoes(dto.getTardePrevencoes());
@@ -111,7 +112,7 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
 
         dto.setId(entity.getId());
         dto.setDataHora(entity.getDataHora());
-
+        
         dto.setManhaPrevencoes(entity.getManhaPrevencoes());
         dto.setManhaAtaques(entity.getManhaAtaques());
         dto.setTardePrevencoes(entity.getTardePrevencoes());
@@ -121,6 +122,7 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
             dto.setPostoId(entity.getPosto().getId());
             dto.setNomePosto(entity.getPosto().getNome());
         }
+        dto.setOrdemPosto(entity.getPosto().getOrdem());
 
         return dto;
     }
@@ -130,9 +132,8 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
      * Filtra apenas os ativos (seguindo a lógica do seu soft delete na Base)
      */
     public List<RelatorioDTO> listarTodos() {
-        return relatorioRepository.findAll()
+        return relatorioRepository.buscarOrdenados()
                 .stream()
-                .filter(Relatorio::isVisivelAdmin)
                 .map(this::toDto)
                 .toList();
     }
@@ -252,8 +253,8 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
             Row header = sheet.createRow(0);
             String[] colunas = {
                     "Posto",
-                    "Manhã Prev", "Manhã Ataques",
-                    "Tarde Prev", "Tarde Ataques",
+                    "Manhã Prevenções", "Manhã Lesões água-viva",
+                    "Tarde Prevenções", "Tarde Lesões água-viva",
                     "Data/Hora"
             };
 

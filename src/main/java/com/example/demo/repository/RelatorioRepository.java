@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.entity.Posto;
+import com.example.demo.entity.Registro;
 import com.example.demo.entity.Relatorio;
 
 @Repository
@@ -30,6 +31,20 @@ public interface RelatorioRepository extends BaseRepository<Relatorio, Long> {
             LocalDateTime fim);
 
     Optional<Relatorio> findTopByPostoIdOrderByDataHoraDesc(Long postoId);
+
     Optional<Relatorio> findByPostoAndData(Posto posto, LocalDate data);
+
+    @Query("""
+                SELECT r FROM Relatorio r
+                JOIN r.posto p
+                WHERE r.visivelAdmin = true
+                ORDER BY
+                    CASE WHEN p.ordem IS NULL THEN 1 ELSE 0 END,
+                    p.ordem ASC,
+                    r.dataHora ASC
+            """)
+    List<Relatorio> buscarOrdenados();
+
+
 
 }
