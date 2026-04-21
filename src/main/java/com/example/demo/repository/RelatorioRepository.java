@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.entity.Posto;
-import com.example.demo.entity.Registro;
 import com.example.demo.entity.Relatorio;
 
 @Repository
