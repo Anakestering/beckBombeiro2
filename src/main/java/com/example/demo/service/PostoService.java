@@ -18,7 +18,7 @@ public class PostoService extends BaseService<Posto, PostoDTO> {
         this.postoRepository = postoRepository;
     }
 
-    // Método específico pro seu sistema (ordenado)
+    
     public List<PostoDTO> listarOrdenado() {
     return postoRepository.findAllByAtivoTrueOrderByOrdemAsc()
             .stream()

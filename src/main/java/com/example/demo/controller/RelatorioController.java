@@ -30,25 +30,25 @@ public class RelatorioController {
         relatorioService.exportExcelPorPeriodo(inicio, fim, response);
     }
 
-    // 🔥 Criar relatório (usado no Dashboard)
+
     @PostMapping
     public RelatorioDTO criar(@RequestBody RelatorioDTO dto) {
         return relatorioService.create(dto);
     }
 
-    // 🔥 Listar todos (admin)
+   
     @GetMapping
     public List<RelatorioDTO> listar() {
         return relatorioService.listarTodos();
     }
 
-    // 🔥 Buscar por ID (caso precise)
+    
     @GetMapping("/id/{id}")
     public RelatorioDTO buscarPorId(@PathVariable Long id) {
         return relatorioService.read(id);
     }
 
-    // 🔥 Atualizar (se quiser editar depois)
+   
     @PutMapping("/{id}")
     public RelatorioDTO atualizar(@PathVariable Long id, @RequestBody RelatorioDTO dto) {
         return relatorioService.update(id, dto);
@@ -59,7 +59,7 @@ public class RelatorioController {
         return relatorioService.buscarPorPostoId(postoId);
     }
 
-    // 🔥 Soft delete (remover da tela, não do banco)
+    
     @DeleteMapping("/{id}")
     public void deletar(@PathVariable Long id) {
         relatorioService.softDelete(id);

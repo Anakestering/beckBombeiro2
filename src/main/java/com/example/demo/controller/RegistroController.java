@@ -19,14 +19,14 @@ public class RegistroController extends BaseController<RegistroDTO> {
         this.registroService = registroService;
     }
 
-    // 🔥 SOBRESCREVE o create (ESSENCIAL)
+    
     @Override
     @PostMapping
     public RegistroDTO create(@RequestBody RegistroDTO dto) {
         return registroService.criarRegistro(dto);
     }
 
-    // 🔥 listar específico (admin)
+   
     @Override
     @GetMapping
     public List<RegistroDTO> read() {

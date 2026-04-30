@@ -38,30 +38,30 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
     @Transactional
     public RelatorioDTO create(RelatorioDTO dto) {
 
-        // 🔍 Busca o posto
+        
         Posto posto = postoRepository.findById(dto.getPostoId())
                 .orElseThrow(() -> new RuntimeException("Posto não encontrado"));
 
-        // 📅 Pega a data (SEM hora)
+    
         LocalDate data = LocalDate.now();
 
-        // 🔍 Verifica se já existe relatório nesse dia
+        
         var existente = relatorioRepository.findByPostoAndData(posto, data);
 
         Relatorio relatorio;
 
         if (existente.isPresent()) {
-            // 🔥 ATUALIZA
+          
             relatorio = existente.get();
 
         } else {
-            // 🔥 CRIA NOVO
+          
             relatorio = new Relatorio();
             relatorio.setPosto(posto);
             relatorio.setData(data);
         }
 
-        // 🔥 Atualiza sempre os dados
+      
         relatorio.setDataHora(LocalDateTime.now());
       
         relatorio.setManhaPrevencoes(dto.getManhaPrevencoes());
@@ -74,10 +74,7 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
         return toDto(salvo);
     }
 
-    /**
-     * 🔥 CONVERSÃO DTO -> ENTITY
-     * Ajustado para garantir que os campos obrigatórios e o Posto sejam setados.
-     */
+    
     @Override
     public Relatorio toEntity(RelatorioDTO dto) {
 
@@ -101,10 +98,7 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
         return entity;
     }
 
-    /**
-     * 🔥 CONVERSÃO ENTITY -> DTO
-     * Garante que o Front-end receba o nome do posto e o ID corretamente.
-     */
+    
     @Override
     public RelatorioDTO toDto(Relatorio entity) {
 
@@ -127,10 +121,7 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
         return dto;
     }
 
-    /**
-     * 🔥 LISTAR TODOS
-     * Filtra apenas os ativos (seguindo a lógica do seu soft delete na Base)
-     */
+    
     public List<RelatorioDTO> listarTodos() {
         return relatorioRepository.buscarOrdenados()
                 .stream()
@@ -180,10 +171,7 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
         .orElse(null);
 }
 
-    /**
-     * 🔥 EXPORTAÇÃO EXCEL
-     */
-
+    
     public void exportExcelPorPeriodo(String inicio, String fim, HttpServletResponse response) throws Exception {
 
         LocalDateTime dataInicio = LocalDateTime.parse(inicio);
@@ -240,7 +228,6 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
             styleImpar.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.getIndex());
             styleImpar.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-            // estilos de data herdando cor
             dataStylePar.cloneStyleFrom(stylePar);
             dataStylePar.setDataFormat(formatoData);
 
@@ -264,7 +251,6 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
                 cell.setCellStyle(headerStyle);
             }
 
-            // Congelar header
             sheet.createFreezePane(0, 1);
 
             // =========================
@@ -300,16 +286,10 @@ public class RelatorioService extends BaseService<Relatorio, RelatorioDTO> {
                 rowNum++;
             }
 
-            // =========================
-            // AUTO SIZE COLUNAS
-            // =========================
             for (int i = 0; i < colunas.length; i++) {
                 sheet.autoSizeColumn(i);
             }
 
-            // =========================
-            // EXPORTAÇÃO
-            // =========================
             workbook.write(response.getOutputStream());
         }
     }
